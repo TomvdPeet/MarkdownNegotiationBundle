@@ -2,8 +2,6 @@
 
 namespace TomvdPeet\MarkdownNegotiationBundle\Html;
 
-use Symfony\Component\DomCrawler\Crawler;
-
 class HtmlCleaner
 {
     /**
@@ -55,15 +53,27 @@ class HtmlCleaner
         $this->baseUrl = $baseUrl;
         $this->options = array_merge($this->options, $options);
 
-        $crawler = new Crawler($html);
-        $root = $crawler->getNode(0);
-        if (!$root instanceof \DOMNode) {
+        $root = $this->createDocument($html)->documentElement;
+        if (null === $root) {
             return '';
         }
 
         $this->parse($root);
 
         return implode($this->result);
+    }
+
+    private function createDocument(string $html): \DOMDocument
+    {
+        $document = new \DOMDocument();
+
+        $previous = libxml_use_internal_errors(true);
+        $document->loadHTML('<?xml encoding="UTF-8">'.$html);
+        $document->encoding = 'UTF-8';
+        libxml_clear_errors();
+        libxml_use_internal_errors($previous);
+
+        return $document;
     }
 
     private function parse(\DOMNode $node): void

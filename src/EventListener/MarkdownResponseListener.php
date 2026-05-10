@@ -9,6 +9,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\HttpKernel\Event\ResponseEvent;
+use TomvdPeet\MarkdownNegotiationBundle\Html\HtmlCleaner;
 use TomvdPeet\MarkdownNegotiationBundle\Routing\MarkdownRouteMap;
 
 class MarkdownResponseListener
@@ -16,6 +17,7 @@ class MarkdownResponseListener
     public function __construct(
         private readonly MarkdownRouteMap $markdownRouteMap,
         private readonly HtmlConverterInterface $converter,
+        private readonly HtmlCleaner $htmlCleaner,
     ) {
     }
 
@@ -53,7 +55,7 @@ class MarkdownResponseListener
             return;
         }
 
-        $response->setContent($this->converter->convert($content));
+        $response->setContent($this->converter->convert($this->htmlCleaner->clean($content, $request->getUri())));
         $response->headers->set('Content-Type', 'text/markdown; charset='.($response->getCharset() ?: 'UTF-8'));
         $this->addVaryAccept($response);
     }

@@ -12,6 +12,7 @@ use Symfony\Component\Routing\RequestContext;
 use Symfony\Component\Routing\RouteCollection;
 use Symfony\Component\Routing\RouterInterface;
 use TomvdPeet\MarkdownNegotiationBundle\EventListener\MarkdownResponseListener;
+use TomvdPeet\MarkdownNegotiationBundle\Html\HtmlCleaner;
 use TomvdPeet\MarkdownNegotiationBundle\Routing\MarkdownRouteMap;
 
 class MarkdownResponseListenerTest extends TestCase
@@ -29,7 +30,7 @@ class MarkdownResponseListenerTest extends TestCase
 
     public function testItConvertsHtmlWhenMarkdownIsPreferred(): void
     {
-        $response = new Response('<h1>Hello</h1><p>World</p>', 200, ['Content-Type' => 'text/html; charset=UTF-8']);
+        $response = new Response('<html><head><title>Ignored</title></head><body><main><h1>Hello</h1><p>World</p></main><footer>Ignored footer</footer></body></html>', 200, ['Content-Type' => 'text/html; charset=UTF-8']);
         $listener = $this->createListener(['markdown_route' => true]);
 
         $listener->onKernelResponse($this->createEvent('/test', 'markdown_route', 'text/markdown, text/html;q=0.5', $response));
@@ -37,6 +38,8 @@ class MarkdownResponseListenerTest extends TestCase
         $this->assertStringContainsString('Hello', (string) $response->getContent());
         $this->assertStringContainsString('World', (string) $response->getContent());
         $this->assertStringNotContainsString('<h1>', (string) $response->getContent());
+        $this->assertStringNotContainsString('Ignored', (string) $response->getContent());
+        $this->assertStringNotContainsString('<main>', (string) $response->getContent());
         $this->assertSame('text/markdown; charset=UTF-8', $response->headers->get('Content-Type'));
         $this->assertContains('Accept', $response->getVary());
     }
@@ -102,7 +105,7 @@ class MarkdownResponseListenerTest extends TestCase
      */
     private function createListener(array $routes): MarkdownResponseListener
     {
-        return new MarkdownResponseListener(new MarkdownRouteMap(new EmptyRouter(), $this->writeCacheFile($routes)), new HtmlConverter());
+        return new MarkdownResponseListener(new MarkdownRouteMap(new EmptyRouter(), $this->writeCacheFile($routes)), new HtmlConverter(), new HtmlCleaner());
     }
 
     /**

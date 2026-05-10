@@ -50,4 +50,12 @@ class HtmlCleanerTest extends TestCase
 
         $this->assertStringContainsString('<a href="/docs/page?foo=bar#part">Read more</a>', $cleaned);
     }
+
+    public function testItUnwrapsDecorativeInlineElements(): void
+    {
+        $cleaned = (new HtmlCleaner())->clean('<p><span class="badge">Decorated HTML</span> <span>Visible text</span></p>');
+
+        $this->assertStringContainsString('<p >Decorated HTML Visible text</p>', $cleaned);
+        $this->assertStringNotContainsString('<span', $cleaned);
+    }
 }

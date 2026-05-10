@@ -6,6 +6,9 @@ services:
 
     League\HTMLToMarkdown\HtmlConverterInterface:
         class: League\HTMLToMarkdown\HtmlConverter
+        arguments:
+            $options:
+                header_style: atx
 
     TomvdPeet\MarkdownNegotiationBundle\:
         resource: '../../*'

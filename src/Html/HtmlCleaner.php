@@ -81,7 +81,16 @@ class HtmlCleaner
         $nodeName = $node->nodeName;
         if ('#text' === $nodeName) {
             $text = preg_replace('/\s+/', ' ', (string) $node->textContent) ?? '';
-            if ('' !== trim($text)) {
+            if ('' === trim($text)) {
+                $lastResult = end($this->result);
+                if ('' !== $this->currentText || (\is_string($lastResult) && !str_ends_with($lastResult, '>'))) {
+                    $this->currentText .= ' ';
+                }
+
+                return;
+            }
+
+            if ('' !== $text) {
                 $this->currentText .= $text;
             }
 
@@ -143,8 +152,7 @@ class HtmlCleaner
         }
 
         if ('' !== $text) {
-            $attributes = $this->getNodeAttributes($node);
-            $this->result[] = "<$nodeName $attributes>$text</$nodeName>";
+            $this->result[] = $text;
         }
     }
 

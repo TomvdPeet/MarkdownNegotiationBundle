@@ -31,14 +31,17 @@ class MarkdownResponseListenerTest extends TestCase
 
     public function testItConvertsHtmlWhenMarkdownIsPreferred(): void
     {
-        $response = new Response('<html><head><title>Ignored</title></head><body><main><h1>Hello</h1><p>World</p></main><footer>Ignored footer</footer></body></html>', 200, ['Content-Type' => 'text/html; charset=UTF-8']);
+        $response = new Response('<html><head><title>Ignored</title></head><body><main><span>Decorated</span><h1>Hello</h1><p>World</p></main><footer>Ignored footer</footer></body></html>', 200, ['Content-Type' => 'text/html; charset=UTF-8']);
         $listener = $this->createListener(['markdown_route' => true]);
 
         $listener->onKernelResponse($this->createEvent('/test', 'markdown_route', 'text/markdown, text/html;q=0.5', $response));
 
         $this->assertStringContainsString('Hello', (string) $response->getContent());
         $this->assertStringContainsString('World', (string) $response->getContent());
+        $this->assertStringContainsString('# Hello', (string) $response->getContent());
+        $this->assertStringContainsString('Decorated', (string) $response->getContent());
         $this->assertStringNotContainsString('<h1>', (string) $response->getContent());
+        $this->assertStringNotContainsString('<span>', (string) $response->getContent());
         $this->assertStringNotContainsString('Ignored', (string) $response->getContent());
         $this->assertStringNotContainsString('<main>', (string) $response->getContent());
         $this->assertSame('text/markdown; charset=UTF-8', $response->headers->get('Content-Type'));
@@ -106,7 +109,7 @@ class MarkdownResponseListenerTest extends TestCase
      */
     private function createListener(array $routes): MarkdownResponseListener
     {
-        return new MarkdownResponseListener(new MarkdownRouteMap(new EmptyRouter(), $this->writeCacheFile($routes)), new HtmlConverter(), new HtmlCleaner(), new MarkdownNegotiator());
+        return new MarkdownResponseListener(new MarkdownRouteMap(new EmptyRouter(), $this->writeCacheFile($routes)), new HtmlConverter(['header_style' => 'atx']), new HtmlCleaner(), new MarkdownNegotiator());
     }
 
     /**

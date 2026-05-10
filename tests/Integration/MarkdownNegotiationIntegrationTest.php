@@ -82,6 +82,14 @@ class MarkdownNegotiationTestKernel extends Kernel
         $container->extension('framework', [
             'secret' => 'markdown-negotiation-test',
             'test' => true,
+            'http_method_override' => false,
+            'handle_all_throwables' => true,
+            'php_errors' => [
+                'log' => true,
+            ],
+            'secrets' => [
+                'enabled' => false,
+            ],
             'router' => [
                 'utf8' => true,
             ],

@@ -4,11 +4,10 @@ services:
         autoconfigure: true
         autowire: true
 
+    League\HTMLToMarkdown\Converter\TableConverter: ~
+
     League\HTMLToMarkdown\HtmlConverterInterface:
-        class: League\HTMLToMarkdown\HtmlConverter
-        arguments:
-            $options:
-                header_style: atx
+        factory: ['@TomvdPeet\MarkdownNegotiationBundle\Html\HtmlConverterFactory', 'create']
 
     TomvdPeet\MarkdownNegotiationBundle\:
         resource: '../../*'

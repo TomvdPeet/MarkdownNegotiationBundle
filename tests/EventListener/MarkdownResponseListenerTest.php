@@ -3,6 +3,7 @@
 namespace TomvdPeet\MarkdownNegotiationBundle\Tests\EventListener;
 
 use League\HTMLToMarkdown\HtmlConverter;
+use League\HTMLToMarkdown\Converter\TableConverter;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -31,7 +32,7 @@ class MarkdownResponseListenerTest extends TestCase
 
     public function testItConvertsHtmlWhenMarkdownIsPreferred(): void
     {
-        $response = new Response('<html><head><title>Ignored</title></head><body><main><span>Decorated</span><h1>Hello</h1><p>World</p></main><footer>Ignored footer</footer></body></html>', 200, ['Content-Type' => 'text/html; charset=UTF-8']);
+        $response = new Response('<html><head><title>Ignored</title></head><body><main><span>Decorated</span><h1>Hello</h1><p>World</p><table><tbody><tr><th>Header</th><td>Value</td></tr></tbody></table></main><footer>Ignored footer</footer></body></html>', 200, ['Content-Type' => 'text/html; charset=UTF-8']);
         $listener = $this->createListener(['markdown_route' => true]);
 
         $listener->onKernelResponse($this->createEvent('/test', 'markdown_route', 'text/markdown, text/html;q=0.5', $response));
@@ -40,6 +41,8 @@ class MarkdownResponseListenerTest extends TestCase
         $this->assertStringContainsString('World', (string) $response->getContent());
         $this->assertStringContainsString('# Hello', (string) $response->getContent());
         $this->assertStringContainsString('Decorated', (string) $response->getContent());
+        $this->assertStringContainsString('| Header | Value |', (string) $response->getContent());
+        $this->assertStringContainsString('|---|---|', (string) $response->getContent());
         $this->assertStringNotContainsString('<h1>', (string) $response->getContent());
         $this->assertStringNotContainsString('<span>', (string) $response->getContent());
         $this->assertStringNotContainsString('Ignored', (string) $response->getContent());
@@ -109,7 +112,10 @@ class MarkdownResponseListenerTest extends TestCase
      */
     private function createListener(array $routes): MarkdownResponseListener
     {
-        return new MarkdownResponseListener(new MarkdownRouteMap(new EmptyRouter(), $this->writeCacheFile($routes)), new HtmlConverter(['header_style' => 'atx']), new HtmlCleaner(), new MarkdownNegotiator());
+        $converter = new HtmlConverter(['header_style' => 'atx']);
+        $converter->getEnvironment()->addConverter(new TableConverter());
+
+        return new MarkdownResponseListener(new MarkdownRouteMap(new EmptyRouter(), $this->writeCacheFile($routes)), $converter, new HtmlCleaner(), new MarkdownNegotiator());
     }
 
     /**

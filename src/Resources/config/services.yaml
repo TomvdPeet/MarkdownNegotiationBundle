@@ -1,0 +1,24 @@
+services:
+    _defaults:
+        public: false
+        autoconfigure: true
+        autowire: true
+
+    League\HTMLToMarkdown\HtmlConverterInterface:
+        class: League\HTMLToMarkdown\HtmlConverter
+
+    TomvdPeet\MarkdownNegotiationBundle\:
+        resource: '../../*'
+        exclude: '../../{DependencyInjection,Resources,MarkdownNegotiationBundle.php}'
+
+    TomvdPeet\MarkdownNegotiationBundle\Routing\MarkdownRouteMap:
+        arguments:
+            $cacheFile: '%kernel.cache_dir%/markdown_negotiation/routes.php'
+
+    TomvdPeet\MarkdownNegotiationBundle\Routing\MarkdownRouteMapWarmer:
+        arguments:
+            $cacheFile: '%kernel.cache_dir%/markdown_negotiation/routes.php'
+
+    TomvdPeet\MarkdownNegotiationBundle\EventListener\MarkdownResponseListener:
+        tags:
+            - { name: kernel.event_listener, event: kernel.response, method: onKernelResponse, priority: -32 }

@@ -1,0 +1,29 @@
+{
+    "name": "tomvdpeet/markdown-negotiation-bundle",
+    "type": "symfony-bundle",
+    "description": "Symfony bundle to negotiate Markdown responses from HTML routes.",
+    "license": "MIT",
+    "require": {
+        "php": ">=8.1",
+        "league/html-to-markdown": "^5.1",
+        "symfony/framework-bundle": "^6.4|^7.0|^8.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "TomvdPeet\\MarkdownNegotiationBundle\\": "src/"
+        }
+    },
+    "require-dev": {
+        "matthiasnoback/symfony-dependency-injection-test": "^4.0",
+        "nyholm/symfony-bundle-test": "^v2.0",
+        "symfony/phpunit-bridge": "^7.0|^8.0"
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "TomvdPeet\\MarkdownNegotiationBundle\\Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "test": "vendor/bin/simple-phpunit --testdox"
+    }
+}

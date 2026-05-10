@@ -1,0 +1,11 @@
+# Changelog
+
+All notable changes to this package will be documented in this file.
+
+## Unreleased
+
+- Add route-option based Markdown response negotiation.
+- Convert successful `text/html` responses to `text/markdown` when Markdown is preferred by the `Accept` header.
+- Skip routes without `options: ['markdown' => true]` through a warmed route map.
+- Skip responses that already use `text/markdown`.
+- Clean decorated HTML before Markdown conversion.

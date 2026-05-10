@@ -17,7 +17,8 @@
     "require-dev": {
         "matthiasnoback/symfony-dependency-injection-test": "^4.0",
         "nyholm/symfony-bundle-test": "^v2.0",
-        "symfony/phpunit-bridge": "^7.0|^8.0"
+        "symfony/phpunit-bridge": "^7.0|^8.0",
+        "symfony/stopwatch": "^6.4|^7.0|^8.0"
     },
     "autoload-dev": {
         "psr-4": {

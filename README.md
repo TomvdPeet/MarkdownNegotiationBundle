@@ -56,3 +56,40 @@ Routes without the option return immediately through an optimized route map. Res
 Before conversion, the HTML is cleaned to remove common layout/decorative nodes such as `head`, `nav`, `script`, `style`, `footer`, and `aside`. Markdown-relevant tags such as headings, paragraphs, links, code, lists, tables, and blockquotes are preserved for conversion.
 
 Links and images are supported by the cleaner. By default, link `href` and image `src` values are not emitted by the internal cleaner; this keeps converted output conservative while the public API remains route-option-only.
+
+## Manual Markdown Responses
+
+Use `MarkdownResponse` when a controller already has Markdown and should return it directly:
+
+```php
+use TomvdPeet\MarkdownNegotiationBundle\Http\MarkdownResponse;
+
+return new MarkdownResponse("# Hello\n\nManual Markdown.");
+```
+
+This sets `Content-Type: text/markdown; charset=UTF-8` and does not add `Vary: Accept`.
+
+If the response was selected through content negotiation, use the named constructor:
+
+```php
+return MarkdownResponse::negotiated("# Hello");
+```
+
+That also adds `Vary: Accept`.
+
+For custom controller logic, inject `MarkdownNegotiator`:
+
+```php
+use Symfony\Component\HttpFoundation\Request;
+use TomvdPeet\MarkdownNegotiationBundle\Http\MarkdownNegotiator;
+use TomvdPeet\MarkdownNegotiationBundle\Http\MarkdownResponse;
+
+public function docs(Request $request, MarkdownNegotiator $negotiator): Response
+{
+    if ($negotiator->prefersMarkdown($request)) {
+        return MarkdownResponse::negotiated("# Docs");
+    }
+
+    return $this->render('docs/show.html.twig');
+}
+```

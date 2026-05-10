@@ -13,6 +13,7 @@ use Symfony\Component\Routing\RouteCollection;
 use Symfony\Component\Routing\RouterInterface;
 use TomvdPeet\MarkdownNegotiationBundle\EventListener\MarkdownResponseListener;
 use TomvdPeet\MarkdownNegotiationBundle\Html\HtmlCleaner;
+use TomvdPeet\MarkdownNegotiationBundle\Http\MarkdownNegotiator;
 use TomvdPeet\MarkdownNegotiationBundle\Routing\MarkdownRouteMap;
 
 class MarkdownResponseListenerTest extends TestCase
@@ -105,7 +106,7 @@ class MarkdownResponseListenerTest extends TestCase
      */
     private function createListener(array $routes): MarkdownResponseListener
     {
-        return new MarkdownResponseListener(new MarkdownRouteMap(new EmptyRouter(), $this->writeCacheFile($routes)), new HtmlConverter(), new HtmlCleaner());
+        return new MarkdownResponseListener(new MarkdownRouteMap(new EmptyRouter(), $this->writeCacheFile($routes)), new HtmlConverter(), new HtmlCleaner(), new MarkdownNegotiator());
     }
 
     /**

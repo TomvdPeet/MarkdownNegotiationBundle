@@ -9,3 +9,5 @@ All notable changes to this package will be documented in this file.
 - Skip routes without `options: ['markdown' => true]` through a warmed route map.
 - Skip responses that already use `text/markdown`.
 - Clean decorated HTML before Markdown conversion.
+- Add `MarkdownResponse` for manually returning Markdown responses.
+- Add `MarkdownNegotiator` for custom controller negotiation logic.

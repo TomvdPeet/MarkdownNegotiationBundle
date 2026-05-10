@@ -2,6 +2,8 @@
 
 namespace TomvdPeet\MarkdownNegotiationBundle\Tests\Integration;
 
+require_once __DIR__.'/Fixtures/DemoController.php';
+
 use PHPUnit\Framework\TestCase;
 use Symfony\Bundle\FrameworkBundle\FrameworkBundle;
 use Symfony\Bundle\FrameworkBundle\Kernel\MicroKernelTrait;
@@ -45,7 +47,7 @@ class MarkdownNegotiationIntegrationTest extends TestCase
 
     private function handle(string $path, string $accept): \Symfony\Component\HttpFoundation\Response
     {
-        $kernel = new MarkdownNegotiationTestKernel('test', true);
+        $kernel = new MarkdownNegotiationTestKernel('test', false);
         $request = Request::create($path, 'GET', [], [], [], ['HTTP_ACCEPT' => $accept]);
         $response = $kernel->handle($request);
         $kernel->terminate($request, $response);
@@ -98,8 +100,6 @@ class MarkdownNegotiationTestKernel extends Kernel
 
     protected function configureRoutes(RoutingConfigurator|RouteCollectionBuilder $routes): void
     {
-        require_once __DIR__.'/Fixtures/DemoController.php';
-
         $routes->import(__DIR__.'/Fixtures/*Controller.php', 'attribute');
     }
 }

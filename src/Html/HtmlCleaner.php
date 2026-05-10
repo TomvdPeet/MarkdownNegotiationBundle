@@ -35,9 +35,7 @@ class HtmlCleaner
 
     private const DEAD_END_NODES = ['head', 'nav', '#comment', 'svg', 'hr', 'iframe', 'br', 'script', 'meta', 'style', 'select', 'footer', 'dialog', 'aside', 'details'];
 
-    private const FORMAT_NODES = ['strong', 'b', 'i'];
-
-    private const STRUCTURE_NODES = ['ul', 'ol', 'li', 'table', 'tbody', 'tr', 'td', 'th', 'a', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6'];
+    private const STRUCTURE_NODES = ['p', 'blockquote', 'strong', 'b', 'i', 'em', 'code', 'pre', 'ul', 'ol', 'li', 'table', 'tbody', 'tr', 'td', 'th', 'a', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6'];
 
     /**
      * @param array{includeHrefs?: bool, includeImgSrc?: bool} $options
@@ -63,9 +61,7 @@ class HtmlCleaner
             return '';
         }
 
-        $this->startNode($root);
         $this->parse($root);
-        $this->endNode($root);
 
         return implode($this->result);
     }
@@ -74,8 +70,8 @@ class HtmlCleaner
     {
         $nodeName = $node->nodeName;
         if ('#text' === $nodeName) {
-            $text = trim((string) $node->textContent);
-            if ('' !== $text) {
+            $text = preg_replace('/\s+/', ' ', (string) $node->textContent) ?? '';
+            if ('' !== trim($text)) {
                 $this->currentText .= $text;
             }
 
@@ -108,26 +104,13 @@ class HtmlCleaner
     {
         $nodeName = $node->nodeName;
 
-        if (in_array($nodeName, self::FORMAT_NODES, true)) {
-            $parent = $node->parentNode;
-            if (null !== $parent) {
-                $parentOid = spl_object_id($parent);
-                if (!isset($this->startedNodes[$parentOid])) {
-                    $previousNode = $this->parentNodes[count($this->parentNodes) - 1];
-                    $attributes = $this->getNodeAttributes($node);
-                    $this->startedNodes[$parentOid] = true;
-                    $this->result[] = "<$previousNode $attributes>";
-                    if ('' !== $this->currentText) {
-                        $this->result[] = $this->currentText;
-                    }
-                    $this->currentText = '';
-                }
-            }
-        }
-
         if (in_array($nodeName, self::STRUCTURE_NODES, true)) {
             $this->startedNodes[spl_object_id($node)] = true;
             $attributes = $this->getNodeAttributes($node);
+            if ('' !== $this->currentText) {
+                $this->result[] = $this->currentText;
+                $this->currentText = '';
+            }
             $this->result[] = "<$nodeName $attributes>";
         }
 

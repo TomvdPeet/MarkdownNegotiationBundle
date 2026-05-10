@@ -33,7 +33,7 @@ class HtmlCleanerTest extends TestCase
         $cleaned = (new HtmlCleaner())->clean($html);
 
         $this->assertStringContainsString('<h1 >Article title</h1>', $cleaned);
-        $this->assertStringContainsString('<p >Intro with<strong >strong text</strong>.</p>', $cleaned);
+        $this->assertStringContainsString('<p >Intro with <strong >strong text</strong>.</p>', $cleaned);
         $this->assertStringContainsString('<ul ><li >First</li><li >Second</li></ul>', $cleaned);
         $this->assertStringNotContainsString('Ignored navigation', $cleaned);
         $this->assertStringNotContainsString('Ignored footer', $cleaned);

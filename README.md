@@ -8,6 +8,12 @@ Symfony bundle that negotiates Markdown responses for opted-in routes.
 composer require tomvdpeet/markdown-negotiation-bundle
 ```
 
+Symfony Flex enables the bundle automatically. If you do not use Flex, register it manually in `config/bundles.php`:
+
+```php
+TomvdPeet\MarkdownNegotiationBundle\MarkdownNegotiationBundle::class => ['all' => true],
+```
+
 ## Usage
 
 Enable Markdown negotiation per route with the `markdown` route option:

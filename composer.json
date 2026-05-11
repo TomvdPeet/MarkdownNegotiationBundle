@@ -2,7 +2,24 @@
     "name": "tomvdpeet/markdown-negotiation-bundle",
     "type": "symfony-bundle",
     "description": "Symfony bundle to negotiate Markdown responses from HTML routes.",
+    "keywords": [
+        "symfony",
+        "bundle",
+        "markdown",
+        "content-negotiation",
+        "accept-header"
+    ],
+    "homepage": "https://github.com/TomvdPeet/MarkdownNegotiationBundle",
     "license": "MIT",
+    "authors": [
+        {
+            "name": "Tom van der Peet"
+        }
+    ],
+    "support": {
+        "issues": "https://github.com/TomvdPeet/MarkdownNegotiationBundle/issues",
+        "source": "https://github.com/TomvdPeet/MarkdownNegotiationBundle"
+    },
     "require": {
         "php": ">=8.1",
         "ext-dom": "*",

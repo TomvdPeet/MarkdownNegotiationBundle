@@ -40,15 +40,24 @@ class HtmlCleanerTest extends TestCase
         $this->assertStringNotContainsString('color: red', $cleaned);
     }
 
-    public function testItCanKeepSameHostLinksRelative(): void
+    public function testItKeepsSameHostLinksRelativeByDefault(): void
     {
         $cleaned = (new HtmlCleaner())->clean(
             '<p><a href="https://example.com/docs/page?foo=bar#part">Read more</a></p>',
             'https://example.com/current',
-            ['includeHrefs' => true],
         );
 
         $this->assertStringContainsString('<a href="/docs/page?foo=bar#part">Read more</a>', $cleaned);
+    }
+
+    public function testItKeepsImageSourcesByDefault(): void
+    {
+        $cleaned = (new HtmlCleaner())->clean(
+            '<p><img src="https://example.com/images/demo.png" alt="Demo image"></p>',
+            'https://example.com/current',
+        );
+
+        $this->assertStringContainsString('<img src="/images/demo.png" alt="Demo image">', $cleaned);
     }
 
     public function testItUnwrapsDecorativeInlineElements(): void

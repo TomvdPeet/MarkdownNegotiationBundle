@@ -26,6 +26,6 @@
         }
     },
     "scripts": {
-        "test": "vendor/bin/simple-phpunit --testdox"
+        "test": "SYMFONY_DEPRECATIONS_HELPER=max[self]=0 vendor/bin/simple-phpunit --testdox"
     }
 }

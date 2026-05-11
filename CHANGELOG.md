@@ -2,7 +2,7 @@
 
 All notable changes to this package will be documented in this file.
 
-## Unreleased
+## 1.0.0 - 2026-05-11
 
 - Add route-option based Markdown response negotiation.
 - Convert successful `text/html` responses to `text/markdown` when Markdown is preferred by the `Accept` header.

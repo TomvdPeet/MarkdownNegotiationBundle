@@ -27,8 +27,8 @@ class HtmlCleaner
      * @var array{includeHrefs: bool, includeImgSrc: bool}
      */
     private array $options = [
-        'includeHrefs' => false,
-        'includeImgSrc' => false,
+        'includeHrefs' => true,
+        'includeImgSrc' => true,
     ];
 
     private const DEAD_END_NODES = ['head', 'nav', '#comment', 'svg', 'hr', 'iframe', 'br', 'script', 'meta', 'style', 'select', 'footer', 'dialog', 'aside', 'details'];

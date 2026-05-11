@@ -53,9 +53,9 @@ The bundle only converts responses when all of these conditions match:
 
 Routes without the option return immediately through an optimized route map. Responses that already use `text/markdown` are left untouched.
 
-Before conversion, the HTML is cleaned to remove common layout/decorative nodes such as `head`, `nav`, `script`, `style`, `footer`, and `aside`. Markdown-relevant tags such as headings, paragraphs, links, code, lists, tables, and blockquotes are preserved for conversion.
+Before conversion, the HTML is cleaned to remove common layout/decorative nodes such as `head`, `nav`, `script`, `style`, `footer`, and `aside`. Markdown-relevant tags such as headings, paragraphs, links, images, code, lists, tables, and blockquotes are preserved for conversion.
 
-Links and images are supported by the cleaner. By default, link `href` and image `src` values are not emitted by the internal cleaner; this keeps converted output conservative while the public API remains route-option-only.
+Links and images keep their `href` and `src` values. Absolute same-host URLs are normalized to relative URLs before conversion.
 
 ## Manual Markdown Responses
 

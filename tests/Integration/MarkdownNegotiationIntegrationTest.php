@@ -45,10 +45,50 @@ class MarkdownNegotiationIntegrationTest extends TestCase
         $this->assertSame('text/html; charset=UTF-8', $response->headers->get('Content-Type'));
     }
 
-    private function handle(string $path, string $accept): \Symfony\Component\HttpFoundation\Response
+    public function testDebugQueryParameterConvertsInDebugWithoutMarkdownAcceptHeader(): void
     {
-        $kernel = new MarkdownNegotiationTestKernel('test', false);
-        $request = Request::create($path, 'GET', [], [], [], ['HTTP_ACCEPT' => $accept]);
+        $response = $this->handle('/enabled', 'text/html', ['_markdown' => '1'], true);
+
+        $this->assertSame('text/markdown; charset=UTF-8', $response->headers->get('Content-Type'));
+        $this->assertStringContainsString('# Hello', (string) $response->getContent());
+    }
+
+    public function testDebugQueryParameterDoesNothingWhenDebugIsDisabled(): void
+    {
+        $response = $this->handle('/enabled', 'text/html', ['_markdown' => '1'], false);
+
+        $this->assertSame('<html><body><h1>Hello</h1><p>Converted</p></body></html>', $response->getContent());
+        $this->assertSame('text/html; charset=UTF-8', $response->headers->get('Content-Type'));
+    }
+
+    public function testDebugQueryParameterIsConfigurable(): void
+    {
+        $response = $this->handle('/enabled', 'text/html', ['markdown_preview' => '1'], true, [
+            'debug_query_parameter' => 'markdown_preview',
+        ]);
+
+        $this->assertSame('text/markdown; charset=UTF-8', $response->headers->get('Content-Type'));
+        $this->assertStringContainsString('# Hello', (string) $response->getContent());
+    }
+
+    public function testDebugQueryParameterCanBeDisabled(): void
+    {
+        $response = $this->handle('/enabled', 'text/html', ['_markdown' => '1'], true, [
+            'debug_query_parameter' => null,
+        ]);
+
+        $this->assertSame('<html><body><h1>Hello</h1><p>Converted</p></body></html>', $response->getContent());
+        $this->assertSame('text/html; charset=UTF-8', $response->headers->get('Content-Type'));
+    }
+
+    /**
+     * @param array<string, string> $query
+     * @param array<string, mixed>  $bundleConfig
+     */
+    private function handle(string $path, string $accept, array $query = [], bool $debug = false, array $bundleConfig = []): \Symfony\Component\HttpFoundation\Response
+    {
+        $kernel = new MarkdownNegotiationTestKernel('test', $debug, $bundleConfig);
+        $request = Request::create($path, 'GET', $query, [], [], ['HTTP_ACCEPT' => $accept]);
         $response = $kernel->handle($request);
         $kernel->terminate($request, $response);
         $kernel->shutdown();
@@ -61,6 +101,14 @@ class MarkdownNegotiationTestKernel extends Kernel
 {
     use MicroKernelTrait;
 
+    /**
+     * @param array<string, mixed> $bundleConfig
+     */
+    public function __construct(string $environment, bool $debug, private readonly array $bundleConfig = [])
+    {
+        parent::__construct($environment, $debug);
+    }
+
     public function registerBundles(): iterable
     {
         return [
@@ -71,7 +119,7 @@ class MarkdownNegotiationTestKernel extends Kernel
 
     public function getCacheDir(): string
     {
-        return sys_get_temp_dir().'/markdown_negotiation_bundle/cache/'.$this->environment;
+        return sys_get_temp_dir().'/markdown_negotiation_bundle/cache/'.$this->environment.'/'.($this->debug ? 'debug' : 'prod').'/'.md5(serialize($this->bundleConfig));
     }
 
     public function getLogDir(): string
@@ -96,6 +144,10 @@ class MarkdownNegotiationTestKernel extends Kernel
                 'utf8' => true,
             ],
         ]);
+
+        if ([] !== $this->bundleConfig) {
+            $container->extension('markdown_negotiation', $this->bundleConfig);
+        }
     }
 
     protected function configureRoutes(RoutingConfigurator|RouteCollectionBuilder $routes): void

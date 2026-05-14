@@ -46,6 +46,25 @@ Wildcard-only requests also keep HTML:
 Accept: */*
 ```
 
+## Debug Query Parameter
+
+When `kernel.debug` is enabled, you can force Markdown negotiation from a browser by adding `_markdown` to the URL:
+
+```text
+/docs?_markdown
+```
+
+This behaves like the request preferred `text/markdown`, but only in debug kernels. Production kernels keep the normal `Accept` header behavior and do not check the query string.
+
+The query parameter name is configurable:
+
+```yaml
+markdown_negotiation:
+    debug_query_parameter: markdown_preview
+```
+
+Set it to `null` or `false` to disable the debug shortcut.
+
 ## Behavior
 
 The bundle only converts responses when all of these conditions match:

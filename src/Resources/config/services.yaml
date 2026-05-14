@@ -11,7 +11,7 @@ services:
 
     TomvdPeet\MarkdownNegotiationBundle\:
         resource: '../../*'
-        exclude: '../../{DependencyInjection,Resources,MarkdownNegotiationBundle.php}'
+        exclude: '../../{DependencyInjection,Resources,MarkdownNegotiationBundle.php,Http/DebugMarkdownNegotiator.php}'
 
     TomvdPeet\MarkdownNegotiationBundle\Routing\MarkdownRouteMap:
         arguments:
